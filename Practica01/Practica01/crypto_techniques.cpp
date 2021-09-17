@@ -183,35 +183,52 @@ void kasiski(string filename) {
 
 void convert_utf8(string filename) {
 	ifstream file;
-	map<char, int> utf8;
+	map <char, string> utf8;
+	utf8.insert(make_pair('A', "41"));
+	utf8.insert(make_pair('B', "42"));
+	utf8.insert(make_pair('C', "43"));
+	utf8.insert(make_pair('D', "44"));
+	utf8.insert(make_pair('E', "45"));
+	utf8.insert(make_pair('F', "46"));
+	utf8.insert(make_pair('G', "47"));
+	utf8.insert(make_pair('H', "48"));
+	utf8.insert(make_pair('I', "49"));
+	utf8.insert(make_pair('J', "4A"));
+	utf8.insert(make_pair('K', "4B"));
+	utf8.insert(make_pair('L', "4C"));
+	utf8.insert(make_pair('M', "4D"));
+	utf8.insert(make_pair('N', "4E"));
+	utf8.insert(make_pair('O', "4F"));
+	utf8.insert(make_pair('P', "50"));
+	utf8.insert(make_pair('Q', "51"));
+	utf8.insert(make_pair('R', "52"));
+	utf8.insert(make_pair('S', "53"));
+	utf8.insert(make_pair('T', "54"));
+	utf8.insert(make_pair('U', "55"));
+	utf8.insert(make_pair('V', "56"));
+	utf8.insert(make_pair('W', "57"));
+	utf8.insert(make_pair('X', "58"));
+	utf8.insert(make_pair('Y', "59"));
+	utf8.insert(make_pair('Z', "5A"));
 
-	int c = 41;
-	for (int i = 'A'; i < 'I'; ++i) {
-		utf8.insert(make_pair(i, c++));
-	}
-
-
-
+	
 	file.open(filename, ios::in);
-
 	if (file.fail()) {
 		cout << "No se pudo abrir!" << endl;
 		return;
 	}
-
+	
+	cout << "CONVERT TO UTF-8" << endl;
 	string text;
 	while (!file.eof()) {
 		std::getline(file, text);
-		cout << text << endl;
+		cout << "0x";
 		for (auto i = text.begin(); i < text.end(); ++i) {
-			switch (*i) {
-				
-			}
+			cout << utf8.at(*i);
 		}
+		cout << endl;
 	}
-
-
-
+	
 }
 
 int main() {
@@ -219,7 +236,7 @@ int main() {
 	substitute_letters(filename);
 	frequencies("HERALDOSNEGROS_pre.txt");
 	kasiski("HERALDOSNEGROS_pre.txt");
-	//convert_utf8("HERALDOSNEGROS_pre.txt");
+	convert_utf8("HERALDOSNEGROS_pre.txt");
 
 
 	return 0;
