@@ -1,33 +1,85 @@
 #include <algorithm>
 #include <iostream>
-#include <string>
 #include <fstream>
 #include <map>
+#include <string>
 #include <vector>
 
 using namespace std;
 
-void replace_letter(string &text) {
+string read_file(string filename);
+
+void preprocessing_text(string& text);
+void replacing_letters(string& text);
+void remove_accents(string& text);
+void convert_lowercase(string& text);
+void convert_uppercase(string& text);
+void remove_special_characters(string& text);
+void frequencies(string text);
+void kasiski(string text);
+void unicode8(string text);
+void insert_word(string text, string word);
+
+bool sorting_frequencies(const pair<char, int>& l, const pair<char, int>& r);
+
+int main() {
+	string file = "HERALDOSNEGROS.txt";
+	string text = read_file(file);
+	preprocessing_text(text);
+
+	string file_preprocessed = "HERALDOSNEGROS_pre.txt";
+	string text_preprocessed = read_file(file_preprocessed);
+
+	frequencies(text_preprocessed);
+	kasiski(text_preprocessed);
+	unicode8(text_preprocessed);
+
+	string inserted_word = "AQUI";
+	insert_word(text_preprocessed, inserted_word);
+
+	return 0;
+}
+
+
+string read_file(string filename) {
+
+	ifstream file;
+	file.open(filename, ios::in);
+
+	if (file.fail()) {
+		cout << "No se pudo abrir el archivo...";
+		exit(1);
+	}
+
+	string temp, text = "";
+	while (!file.eof()) {
+		getline(file, temp);
+		text += temp;
+	}
+
+	file.close();
+	return text;
+}
+
+
+void preprocessing_text(string& text) {
+
+	convert_lowercase(text);
+	replacing_letters(text);
+	remove_accents(text);
+	convert_uppercase(text);
+	remove_special_characters(text);
+}
+
+
+void replacing_letters(string& text) {
+
+	ofstream file;
+	cout << "Reemplazando las letras..." << endl;
+	file.open("Ejercicio #01 - Sustituciones.txt", ios::out);
+
 	for (auto i = text.begin(); i < text.end(); ++i) {
 		switch (*i) {
-			// Removing the accents
-			case 'á':
-				*i = 'a';
-				break;
-			case 'é':
-				*i = 'e';
-				break;
-			case 'í':
-				*i = 'i';
-				break;
-			case 'ó':
-				*i = 'o';
-				break;
-			case 'ú':
-				*i = 'v';
-				break;
-
-			// Substituting special letters
 			case 'j':
 				*i = 'i';
 				break;
@@ -51,25 +103,46 @@ void replace_letter(string &text) {
 				break;
 			default:
 				break;
+			}
+	}
+	
+	file << text;
+	file.close();
+}
+
+void remove_accents(string &text) {
+
+	ofstream file;
+	cout << "Quitando las tildes..." << endl;
+	file.open("Ejercicio #02 - Tildes.txt", ios::out);
+	for (auto i = text.begin(); i < text.end(); ++i) {
+		switch (*i) {
+			case 'á':
+				*i = 'a';
+				break;
+			case 'é':
+				*i = 'e';
+				break;
+			case 'í':
+				*i = 'i';
+				break;
+			case 'ó':
+				*i = 'o';
+				break;
+			case 'ú':
+				*i = 'v';
+				break;
+			default:
+				break;
 		}
 	}
-}
 
-void remove_special_characters(string &text) {
-	for (auto i = text.begin(); i < text.end(); ++i) {
-		if (*i < 'A' || * i > 'Z')
-			*i = '\0';
-	}
-}
-
-void convert_uppercase(string& text) {
-	for (auto i = text.begin(); i < text.end(); ++i) {
-		if (*i >= 'a' && *i <= 'z')
-			*i -= 32;
-	}
+	file << text;
+	file.close();
 }
 
 void convert_lowercase(string& text) {
+
 	for (auto i = text.begin(); i < text.end(); ++i) {
 		if (*i >= 'A' && *i <= 'Z')
 			*i += 32;
@@ -78,102 +151,95 @@ void convert_lowercase(string& text) {
 	}
 }
 
-void substitute_letters(string filename) {
-	ofstream out;
-	ifstream file;
-	file.open(filename, ios::in);
+void convert_uppercase(string& text) {
+
+	ofstream file;
+	cout << "Convirtiendo a mayusculas..." << endl;
+	file.open("Ejercicio #03 - Mayusculas.txt", ios::out);
+
+	for (auto i = text.begin(); i < text.end(); ++i) {
+		if (*i >= 'a' && *i <= 'z')
+			*i -= 32;
+	}
+
+	file << text;
+	file.close();
+}
+
+void remove_special_characters(string& text) {
+
+	ofstream file, out;
+	cout << "Quitando las espacios y caracteres especiales..." << endl;
+	file.open("Ejercicio #04 - Espacios y signos.txt", ios::out);
 	out.open("HERALDOSNEGROS_pre.txt", ios::out);
 
-	if (file.fail()) {
-		cout << "No se pudo abrir!" << endl;
-		return;
+	for (auto i = text.begin(); i < text.end(); ++i) {
+		if (*i < 'A' || *i > 'Z')
+			*i = '\0';
 	}
 
-	string text;
-	while (!file.eof()) {
-		std::getline(file, text);
-		convert_lowercase(text);
-		replace_letter(text);
-		convert_uppercase(text);
-		remove_special_characters(text);
-		for (auto i = text.begin(); i < text.end(); ++i) {
-			if (*i == '\0')
-				continue;
-			out << *i;
-		}
-	}
+	text.erase(std::remove(text.begin(), text.end(), '\0'), text.end());
+
+	file << text;
+	out << text;
 
 	file.close();
 	out.close();
 }
 
-void frequencies(string filename) {
+void frequencies(string text) {
+
+	ofstream file;
+	cout << "Realizando la tabla de frecuencias..." << endl;
+	file.open("Ejercicio #05 - Frecuencias.txt", ios::out);
+	
 	map<char, int> frecuency_table;
-	ifstream file;
-	file.open(filename, ios::in);
-
-	if (file.fail()) {
-		cout << "No se pudo abrir!" << endl;
-		return;
+	for (auto i = text.begin(); i < text.end(); ++i) {
+		if (frecuency_table.find(*i) != frecuency_table.end())
+			frecuency_table.at(*i)++;
+		else
+			frecuency_table.insert_or_assign(*i, 1);
 	}
-	
-	// Filling the table
-	string text;
-	while (!file.eof()) {
-		std::getline(file, text);
-		for (auto i = text.begin(); i < text.end(); ++i) {
-			if (frecuency_table.find(*i) != frecuency_table.end()) {
-				frecuency_table.at(*i)++;
-			} else {
-				frecuency_table.insert_or_assign(*i, 1);
-			}
-		}
+
+	std::vector<pair<char, int>> frecuency_table_sorted;
+	std::copy(frecuency_table.begin(), frecuency_table.end(), std::back_inserter<std::vector<pair<char, int >>>(frecuency_table_sorted));
+	std::sort(frecuency_table_sorted.begin(), frecuency_table_sorted.end(), sorting_frequencies);
+
+	file << "Tabla de frecuencias" << endl;
+	for (auto& elem : frecuency_table)
+		file << elem.first << " " << elem.second << endl;
+
+	file << "\nValores más altos:" << endl;
+	for (auto i = frecuency_table_sorted.begin(); i < frecuency_table_sorted.begin() + 5; ++i) {
+		file << (*i).first << " " << (*i).second << endl;
 	}
 
 	file.close();
-	
-	// Sorting
-	std::vector<pair<char, int>> temp;
-	std::copy(frecuency_table.begin(), frecuency_table.end(),std::back_inserter<std::vector<pair<char, int >>>(temp));
-	
-	std::sort(temp.begin(), temp.end(),[](const pair<char, int> &l, const pair<char, int> &r) {
-		if (l.second != r.second) 
-			return l.second > r.second;
-		return l.first > r.first;
-	});
-
-	/*
-	for (auto& t : frecuency_table) {
-		cout << t.first << " " << t.second << endl;
-	}*/
-
-	/* ORDERED */
-	cout << "TABLA DE FRECUENCIAS" << endl;
-	for (int i = 0; i < temp.size(); ++i)
-		cout << temp[i].first << " " << temp[i].second << endl;
 }
 
-void kasiski(string filename) {
-	ifstream file;
-	file.open(filename, ios::in);
+bool sorting_frequencies(const pair<char, int>& l, const pair<char, int>& r) {
+	if (l.second != r.second)
+		return l.second > r.second;
+	return l.first > r.first;
+}
 
-	if (file.fail()) {
-		cout << "No se pudo abrir!" << endl;
-		return;
-	}
-	
-	string text;
-	while (!file.eof()) {
-		std::getline(file, text);
-		auto last = text.begin();
-		int distance;
+void kasiski(string text) {
 
-		for (auto i = text.begin(), j = text.begin() + 1, k = text.begin() + 2; k < text.end(); ++i, ++j, ++k) {
-			if (*i == *j && *i == *k) {
-				if (last != i) {
-					cout << i - last << endl;
-					last = i;
-				}
+	ofstream file;
+	cout << "Utilizando metodo de Kasiski..." << endl;
+	file.open("Ejercicio #06 - Kasiski.txt", ios::out);
+
+	int distance = 0;
+	string trigram1, trigram2;
+	for (size_t i = 0; i < text.size() - 2; ++i) {
+		trigram1 = text.substr(i, 3);
+		
+		for (size_t j = i + 1; j < text.size() - 2; ++j) {
+			trigram2 = text.substr(j, 3);
+			
+			if (trigram1 == trigram2) {
+				distance = j - i;
+				file << trigram1 << " " << trigram2 << " Distance: " << distance << endl;
 			}
 		}
 	}
@@ -181,63 +247,41 @@ void kasiski(string filename) {
 	file.close();
 }
 
-void convert_utf8(string filename) {
-	ifstream file;
-	map <char, string> utf8;
-	utf8.insert(make_pair('A', "41"));
-	utf8.insert(make_pair('B', "42"));
-	utf8.insert(make_pair('C', "43"));
-	utf8.insert(make_pair('D', "44"));
-	utf8.insert(make_pair('E', "45"));
-	utf8.insert(make_pair('F', "46"));
-	utf8.insert(make_pair('G', "47"));
-	utf8.insert(make_pair('H', "48"));
-	utf8.insert(make_pair('I', "49"));
-	utf8.insert(make_pair('J', "4A"));
-	utf8.insert(make_pair('K', "4B"));
-	utf8.insert(make_pair('L', "4C"));
-	utf8.insert(make_pair('M', "4D"));
-	utf8.insert(make_pair('N', "4E"));
-	utf8.insert(make_pair('O', "4F"));
-	utf8.insert(make_pair('P', "50"));
-	utf8.insert(make_pair('Q', "51"));
-	utf8.insert(make_pair('R', "52"));
-	utf8.insert(make_pair('S', "53"));
-	utf8.insert(make_pair('T', "54"));
-	utf8.insert(make_pair('U', "55"));
-	utf8.insert(make_pair('V', "56"));
-	utf8.insert(make_pair('W', "57"));
-	utf8.insert(make_pair('X', "58"));
-	utf8.insert(make_pair('Y', "59"));
-	utf8.insert(make_pair('Z', "5A"));
+void unicode8(string text) {
 
-	
-	file.open(filename, ios::in);
-	if (file.fail()) {
-		cout << "No se pudo abrir!" << endl;
-		return;
-	}
-	
-	cout << "CONVERT TO UTF-8" << endl;
-	string text;
-	while (!file.eof()) {
-		std::getline(file, text);
-		cout << "0x";
-		for (auto i = text.begin(); i < text.end(); ++i) {
-			cout << utf8.at(*i);
-		}
-		cout << endl;
-	}
-	
+	ofstream file;
+	cout << "Convirtiendo a UNICODE-8..." << endl;
+	file.open("Ejercicio #07 - Unicode8.txt", ios::out);
+
+	file << "0x";
+	for (size_t i = 0; i < text.size(); ++i)
+		file << std::hex << int(text[i]);
+
+	file.close();
 }
 
-int main() {
-	string filename = "HERALDOSNEGROS.txt";
-	substitute_letters(filename);
-	frequencies("HERALDOSNEGROS_pre.txt");
-	kasiski("HERALDOSNEGROS_pre.txt");
-	convert_utf8("HERALDOSNEGROS_pre.txt");
+void insert_word(string text, string word) {
 
+	ofstream file;
+	cout << "Agregando la palabra AQUI cada 20 caracteres..." << endl;
+	file.open("Ejercicio #09 - Aqui.txt", ios::out);
 
-	return 0;
+	string result = "";
+	int count = 0;
+	for (size_t i = 0; i < text.size(); ++i) {
+		
+		if (count == 20) {
+			result += word;
+			count = -1;
+		} else 
+			result += text[i];
+		++count;
+	}
+
+	while (result.size() % 4) result += "X";
+
+	file << result;
+	file.close();
 }
+
+

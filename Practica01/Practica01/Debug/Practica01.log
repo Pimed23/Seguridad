@@ -1,4 +1,2 @@
 ﻿  crypto_techniques.cpp
-D:\Universidad\2021-B\Seguridad\Practica 01\Practica01\Practica01\crypto_techniques.cpp(152,20): warning C4018: '<': signed/unsigned mismatch
-D:\Universidad\2021-B\Seguridad\Practica 01\Practica01\Practica01\crypto_techniques.cpp(169,7): warning C4101: 'distance': unreferenced local variable
   Practica01.vcxproj -> D:\Universidad\2021-B\Seguridad\Practica 01\Practica01\Debug\Practica01.exe
